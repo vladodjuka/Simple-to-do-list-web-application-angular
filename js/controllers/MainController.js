@@ -1,8 +1,24 @@
 
-app.controller("MainController", ["$scope", "$http", function($scope, $http){
+app.controller("MainController", ["$scope", "$http","$cookieStore", function($scope, $http, $cookieStore){
 	
 	$scope.tasks=[];
 	$scope.inputTaskName="";
+	$scope.visibilityTasksContainer = false;
+
+
+	window.onload = function(){
+		$scope.cookie = $cookieStore.get('tasks');
+		if($scope.cookie){
+			$scope.tasks = JSON.parse($scope.cookie);
+		}
+		$scope.setTasksContainerVisibility();
+	}
+
+	window.onbeforeunload = function () {
+		var data = JSON.stringify($scope.tasks);
+		$scope.saveAsCookie(data);	
+	}
+
 
 
 	$scope.addTask = function(name){
@@ -18,6 +34,8 @@ app.controller("MainController", ["$scope", "$http", function($scope, $http){
 		$scope.tasks.push(newTaskObject);
 
 		$scope.inputTaskName = "";
+
+		$scope.setTasksContainerVisibility();
 	}
 
 	$scope.toggleCompleted = function(index){
@@ -27,12 +45,15 @@ app.controller("MainController", ["$scope", "$http", function($scope, $http){
 
 
 	$scope.setTasksContainerVisibility = function(){
+		console.log($scope.tasks.length);
 		if($scope.tasks.length>0){
-			return true;
+			$scope.visibilityTasksContainer = true;
 		}
 		else{
-			return false;
+			$scope.visibilityTasksContainer = false;
 		}
+
+		$scope.$apply();
 	}
 
 	$scope.showNotCompletedTasks = function(){
@@ -79,5 +100,10 @@ app.controller("MainController", ["$scope", "$http", function($scope, $http){
 	$scope.deleteAll = function(){
 		$scope.tasks = [];
 	}
+
+	$scope.saveAsCookie = function(tasksJson){
+		$cookieStore.put('tasks', tasksJson)
+	}
+
 
 }]);

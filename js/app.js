@@ -1,2 +1,2 @@
 
-var app = angular.module("MainApp", []);
+var app = angular.module("MainApp", ['ngCookies']);
